@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -200 400 400" width="800" height="800" style="background: transparent;">
+  <!-- Animated Logo Content -->
+  <g transform="rotate(0)">
+    <!-- Pulse Animation -->
+    <animateTransform attributeName="transform" type="scale" values="1;1.05;1" dur="2s" repeatCount="indefinite"/>
+    
+    <!-- Spin Animation -->
+    <animateTransform attributeName="transform" type="rotate" values="0;720" dur="5s" begin="0s;8s" additive="sum" fill="freeze"/>
+
+    <!-- Logo Container Circle -->
+    <circle cx="0" cy="0" r="180" fill="rgba(255,255,255,0.05)" filter="url(#shadow)"/>
+    
+    <!-- Logo Geometry -->
+    <g filter="url(#pipe-effect)">
+      <!-- Central Vertical Line -->
+      <line x1="0" y1="-130" x2="0" y2="130" stroke="#0866FF" stroke-width="3" stroke-linecap="round">
+        <animate attributeName="stroke-width" values="3;5;3" dur="2s" repeatCount="indefinite"/>
+      </line>
+
+      <!-- W Patterns (4 rotations) -->
+      <g transform="rotate(0)">
+        <path d="M -95,95 L -71,0 L -35,71 L 0,0 L 35,71 L 71,0 L 95,95" fill="none" stroke="#0866FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+          <animate attributeName="stroke-width" values="4;6;4" dur="2s" repeatCount="indefinite"/>
+        </path>
+        <path d="M -95,-95 L -71,0 L -35,-71 L 0,0 L 35,-71 L 71,0 L 95,-95" fill="none" stroke="#0866FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+          <animate attributeName="stroke-width" values="4;6;4" dur="2s" repeatCount="indefinite"/>
+        </path>
+      </g>
+      <g transform="rotate(90)">
+        <path d="M -95,95 L -71,0 L -35,71 L 0,0 L 35,71 L 71,0 L 95,95" fill="none" stroke="#0866FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+          <animate attributeName="stroke-width" values="4;6;4" dur="2s" repeatCount="indefinite"/>
+        </path>
+        <path d="M -95,-95 L -71,0 L -35,-71 L 0,0 L 35,-71 L 71,0 L 95,-95" fill="none" stroke="#0866FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+          <animate attributeName="stroke-width" values="4;6;4" dur="2s" repeatCount="indefinite"/>
+        </path>
+      </g>
+      <g transform="rotate(180)">
+        <path d="M -95,95 L -71,0 L -35,71 L 0,0 L 35,71 L 71,0 L 95,95" fill="none" stroke="#0866FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+          <animate attributeName="stroke-width" values="4;6;4" dur="2s" repeatCount="indefinite"/>
+        </path>
+        <path d="M -95,-95 L -71,0 L -35,-71 L 0,0 L 35,-71 L 71,0 L 95,-95" fill="none" stroke="#0866FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+          <animate attributeName="stroke-width" values="4;6;4" dur="2s" repeatCount="indefinite"/>
+        </path>
+      </g>
+      <g transform="rotate(270)">
+        <path d="M -95,95 L -71,0 L -35,71 L 0,0 L 35,71 L 71,0 L 95,95" fill="none" stroke="#0866FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+          <animate attributeName="stroke-width" values="4;6;4" dur="2s" repeatCount="indefinite"/>
+        </path>
+        <path d="M -95,-95 L -71,0 L -35,-71 L 0,0 L 35,-71 L 71,0 L 95,-95" fill="none" stroke="#0866FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+          <animate attributeName="stroke-width" values="4;6;4" dur="2s" repeatCount="indefinite"/>
+        </path>
+      </g>
+
+      <!-- Center Elements -->
+      <circle cx="0" cy="0" r="32" fill="none" stroke="#0866FF" stroke-width="3">
+        <animate attributeName="r" values="32;36;32" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="0" cy="0" r="10" fill="#0866FF">
+        <animate attributeName="r" values="10;12;10" dur="2s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+  </g>
+
+  <!-- Filters -->
+  <defs>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="8" stdDeviation="15" flood-color="#0866FF" flood-opacity="0.15"/>
+    </filter>
+    <filter id="pipe-effect" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#0866FF" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+</svg>

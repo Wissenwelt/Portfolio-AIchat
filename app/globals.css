@@ -1,26 +1,145 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Custom Global Styles */
+body {
+  @apply bg-neutral-50 text-secondary-500;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Section Styles */
+.section {
+  @apply py-16 px-4 max-w-4xl mx-auto;
+}
+.section h2 {
+  @apply text-3xl font-bold border-b-2 border-primary-200 pb-2 mb-8 text-primary-600;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Navbar Styles */
+.navbar a {
+  @apply text-secondary-600 hover:text-accent-500 transition-colors duration-200;
+}
+
+/* Experience Accordion */
+.experience-item {
+  @apply mb-4 border-b border-neutral-200 pb-4;
+}
+.experience-title {
+  @apply cursor-pointer font-medium text-xl hover:text-primary-500 transition-colors;
+}
+
+/* Chatbot Widget - Mobile Friendly Version */
+.chatbot-toggle {
+  @apply fixed bottom-5 right-5 bg-primary-500 text-neutral-50 p-3 rounded-full shadow-lg hover:bg-primary-600 transition-colors z-40;
+}
+.chatbot-window {
+  @apply fixed bottom-20 right-5 bg-white rounded-lg shadow-xl w-full max-w-xs max-h-96 flex flex-col border border-neutral-100 z-40 md:w-80;
+}
+.chat-header {
+  @apply bg-primary-500 text-neutral-50 px-4 py-2 rounded-t-lg;
+}
+.chat-input-area button {
+  @apply bg-accent-500 text-white px-3 hover:bg-accent-600 transition-colors;
+}
+
+/* Additional Utilities */
+.prose a {
+  @apply text-accent-600 hover:text-accent-700 underline;
+}
+
+.btn-primary {
+  @apply bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors;
+}
+
+.btn-secondary {
+  @apply bg-accent-500 text-white px-6 py-2 rounded-lg hover:bg-accent-600 transition-colors;
+}
+
+/* Custom Animations - With will-change for performance */
+@keyframes border-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes underline-expand {
+  0% { width: 0; opacity: 0; }
+  100% { width: 100%; opacity: 1; }
+}
+
+/* Only apply animations on non-reduced-motion preferences */
+@media (prefers-reduced-motion: no-preference) {
+  .animate-border-rotate {
+    will-change: transform;
+    animation: border-rotate 8s linear infinite;
+  }
+
+  .animate-underline-expand {
+    will-change: width, opacity;
+    animation: underline-expand 1s ease-out forwards;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+
+  @keyframes float-delayed {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
+
+  .animate-float {
+    will-change: transform;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-float-delayed {
+    will-change: transform;
+    animation: float-delayed 7s ease-in-out infinite;
+    animation-delay: 1s;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Simpler hover effect for better mobile performance */
+.highlight-text {
+  @apply relative inline-block;
+}
+
+.highlight-text::after {
+  content: '';
+  @apply absolute bottom-0 left-0 w-0 h-1 bg-accent-300/50;
+  transition: width 0.3s ease;
+}
+
+/* Only apply hover effects on devices that support hover */
+@media (hover: hover) {
+  .highlight-text:hover::after {
+    @apply w-full;
+  }
+}
+
+/* Custom Form Animations - Simplified for better hydration */
+input, textarea {
+  @apply transition-all duration-300;
+}
+
+input:focus, textarea:focus {
+  @apply ring-2 ring-primary-100;
+}
+
+/* Status Message Animation - Server/Client safe */
+.checkmark-animation path {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+}
+
+/* Only apply animation client-side with JavaScript */
+/* In your JS: document.querySelectorAll('.checkmark-animation path').forEach(path => path.classList.add('animate-checkmark')); */
+.animate-checkmark {
+  animation: checkmark 0.5s ease-out forwards;
+}
+
+@keyframes checkmark {
+  0% { stroke-dashoffset: 20; }
+  100% { stroke-dashoffset: 0; }
 }
