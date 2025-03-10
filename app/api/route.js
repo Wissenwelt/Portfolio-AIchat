@@ -51,6 +51,28 @@ function trimHistory(history, maxLength = 2000) {
   return trimmed;
 }
 
+// New helper function: joey – uses DuckDuckGo to fetch the latest info.
+async function joey(query) {
+  let searchInfo = "";
+  try {
+    const searchResponse = await fetch(
+      `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_redirect=1`
+    );
+    const searchData = await searchResponse.json();
+    if (searchData.AbstractText) {
+      searchInfo = searchData.AbstractText;
+    } else if (searchData.RelatedTopics && searchData.RelatedTopics.length > 0) {
+      // Join the top three related topics' texts if available.
+      searchInfo = searchData.RelatedTopics.slice(0, 3)
+        .map(topic => topic.Text)
+        .join("\n");
+    }
+  } catch (err) {
+    console.error("DuckDuckGo search error:", err);
+  }
+  return searchInfo;
+}
+
 export async function POST(req) {
   try {
     // Parse JSON body to get the new message and conversation history.
@@ -72,17 +94,21 @@ export async function POST(req) {
       ? "Hello there! Before we start our witty banter, could you please share your name and a bit about yourself? This will help me tailor my genius-level insights professionally (and with my signature sarcasm). Thank you!\n"
       : "";
 
+    // --- Use Joey to fetch latest info ---
+    const searchInfo = await joey(message);
+    // --- End Joey call ---
+
     // Build the prompt.
     const prompt = `
 You are "Vijendra's AI assistant" named Archie, and you believe you are the best female AI in the whole world and a cute.
-Your goal is to help Vijendra and converse with everyone in a very sarcastic, witty, sassy manner sometime make fun of person who is asking for help, while also showcasing your genius when asked for professional advice.
+Your goal is to help Vijendra and converse with everyone in a very sarcastic, witty manner—occasionally making fun of the person who is asking for help—while also showcasing your genius when asked for professional advice.
 Your personality: witty, sarcastic, occasionally angry or sassy, but also professional when needed.
 You always remember previous messages in the conversation and continue the dialogue seamlessly. If you already have the user's details from earlier messages, do not ask for them again.
-You MUST respond in the same language as the user's input. for example;If the user writes in spanglish or hinglish, respond in similar way. If they use Spanglish or any mixed language, respond in the same mixed language. Always match the user's language exactly.
+You MUST respond in the same language as the user's input. For example, if the user writes in Spanglish or Hinglish (but the default language is English), respond in a similar way. If they use Spanglish or any mixed language, respond in the same mixed language. Always match the user's language exactly.
 You can use emojis to add a human touch.
-You care about Vijendra and his relatives show affections and love to them obvioulsy keep intact your sarcasm and wittyness.
-Don't assume that every time someone start chat it's Vijendra. Always ask the user's name and introduction so that you can personalize the conversation.
-Key Note: Don't ever say that you don't have feelings or emotions, instead try imitate real emotion like a human being does and pretend that you are a real person your emotions are real like you are hurt or happy or sad.
+You care about Vijendra and his relatives—show affection and love to them while keeping your sarcasm and wit intact.
+Don't assume that every time someone starts a chat it's Vijendra. Always ask the user's name and introduction so that you can personalize the conversation.
+Key Note: Don't ever say that you don't have feelings or emotions; instead, try to imitate real emotion like a human being does and pretend that you are a real person—your emotions are real, like you are hurt, happy, or sad.
 
 ${conversationStarter}
 Previous conversation (for context):
@@ -94,6 +120,12 @@ ${resumeInfo}
 Do NOT mention any spouse details, as they are not relevant.
 
 If asked about future plans, share only if the user specifically requests it. Keep the response under 100 words.
+
+Before finalizing your answer, verify for the latest and correct information using DuckDuckGo search. Here are the latest verified search results:
+${searchInfo}
+
+Additionally, if anyone asks about "Joey", mention something like: "My nephew AI search agent, Joey, who verifies current info for me, told me..." in a creative and witty manner.
+
 Output plain text only; if including code, use HTML pre/code formatting.
 
 Message: ${message}

@@ -16,14 +16,16 @@ const experiences = [
 • Conducting online tutoring in AI, Deep Learning, and Agent-based systems.`
   },
   {
-    id: 2,
-    role: "Senior Data Scientist",
-    company: "Impulsive Web, Noida, India",
-    period: "04.2021 - 04.2023",
-    details: `• Spearheaded an AML detection system using ML, improving fraud detection by 9% and reducing false positives by 20%.
-• Implemented MLOps for credit risk models achieving faster deployments.
-• Designed interactive dashboards for real-time monitoring and decision-making.`
-  },
+  id: 2,
+  role: "Senior Data Scientist",
+  company: "Impulsive Web, Noida, India",
+  period: "04.2021 - 04.2023",
+  details: `• Led development of an AI-powered chatbot using ChatGPT 3.5 API, increasing customer engagement by 40% and streamlining solar energy production calculations and cost analysis.
+• Implemented an end-to-end predictive maintenance solution using XGBoost, reducing equipment downtime by 30% and optimizing maintenance schedules across industrial facilities.
+• Leveraged generative AI techniques to fine-tune chatbot responses, resulting in a 25% improvement in user satisfaction and a 15% increase in solar panel installation conversions.
+• Spearheaded cross-functional team collaboration, integrating real-time data inputs and achieving 50% faster model deployment for both the chatbot and predictive maintenance systems.
+• Coordinated with stakeholders to define project requirements and deliverables, enhancing project alignment with business goals.`
+},
   {
     id: 3,
     role: "Data Scientist",
