@@ -3,59 +3,127 @@
 @tailwind utilities;
 
 /* Custom Global Styles */
-body {
-  @apply bg-neutral-50 text-secondary-500;
+@layer base {
+  body {
+    @apply bg-gray-50 text-secondary-700 antialiased font-sans; /* Use variable font if defined */
+    /* Example: font-family: var(--font-sans), sans-serif; */
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold text-secondary-800; /* Slightly darker headings */
+  }
+
+  h2 { /* Default section heading style */
+    @apply text-3xl md:text-4xl mb-8;
+  }
+
+  p {
+    @apply leading-relaxed text-secondary-600; /* Consistent paragraph styling */
+  }
+
+  a {
+     @apply text-primary-600 hover:text-accent-500 transition-colors duration-200 ease-in-out;
+     /* Consider adding focus styles for accessibility */
+     @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-300 rounded;
+  }
+
+  /* Custom scrollbar (optional, use with caution for cross-browser compatibility) */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary-300 rounded-full hover:bg-primary-400 transition-colors;
+  }
 }
 
-/* Section Styles */
-.section {
-  @apply py-16 px-4 max-w-4xl mx-auto;
-}
-.section h2 {
-  @apply text-3xl font-bold border-b-2 border-primary-200 pb-2 mb-8 text-primary-600;
+/* Component Layer - Reusable styles */
+@layer components {
+  .section-padding {
+    @apply py-16 px-4 sm:py-20 sm:px-6 lg:py-24 lg:px-8; /* Consistent section padding */
+  }
+
+  .container-max {
+     @apply max-w-7xl mx-auto; /* Max width container */
+  }
+
+  .btn { /* Base button style */
+     @apply inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-base font-medium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 ease-in-out;
+  }
+
+  .btn-primary {
+    @apply btn bg-gradient-to-r from-primary-500 to-accent-500 text-white hover:from-primary-600 hover:to-accent-600 focus:ring-primary-400 transform hover:-translate-y-0.5; /* Gradient button */
+  }
+
+  .btn-secondary {
+    @apply btn bg-white text-primary-600 border-primary-300 hover:bg-primary-50 focus:ring-primary-300; /* Outline/secondary style */
+  }
+
+  .btn-ghost {
+     @apply btn bg-transparent text-primary-600 hover:bg-primary-50 focus:ring-primary-300 shadow-none; /* Ghost button */
+  }
+
+  /* Input field base style */
+  .input-base {
+      @apply block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-colors duration-200;
+  }
+
+  /* Highlight text effect */
+   .highlight-text {
+    @apply relative inline-block py-1;
+  }
+
+  .highlight-text::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-1 bg-accent-300/60 transition-all duration-500 ease-out;
+    /* Animate width on hover/focus */
+  }
+
+  /* Apply hover effect only on devices that support hover */
+  @media (hover: hover) {
+    .highlight-text:hover::after {
+      @apply w-full;
+    }
+  }
+   /* Apply focus effect for keyboard navigation */
+  .highlight-text:focus::after {
+     @apply w-full;
+  }
+   /* Ensure focus outline is visible */
+  .highlight-text:focus {
+     @apply outline-none;
+  }
+
 }
 
-/* Navbar Styles */
-.navbar a {
-  @apply text-secondary-600 hover:text-accent-500 transition-colors duration-200;
+/* Utilities Layer - Specific overrides or small helpers */
+@layer utilities {
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+   /* Animation delays (if needed frequently) */
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+
+  /* Add will-change for performance optimization on animated elements */
+  .will-change-transform {
+    will-change: transform;
+  }
+  .will-change-opacity {
+     will-change: opacity;
+  }
 }
 
-/* Experience Accordion */
-.experience-item {
-  @apply mb-4 border-b border-neutral-200 pb-4;
-}
-.experience-title {
-  @apply cursor-pointer font-medium text-xl hover:text-primary-500 transition-colors;
-}
 
-/* Chatbot Widget - Mobile Friendly Version */
-.chatbot-toggle {
-  @apply fixed bottom-5 right-5 bg-primary-500 text-neutral-50 p-3 rounded-full shadow-lg hover:bg-primary-600 transition-colors z-40;
-}
-.chatbot-window {
-  @apply fixed bottom-20 right-5 bg-white rounded-lg shadow-xl w-full max-w-xs max-h-96 flex flex-col border border-neutral-100 z-40 md:w-80;
-}
-.chat-header {
-  @apply bg-primary-500 text-neutral-50 px-4 py-2 rounded-t-lg;
-}
-.chat-input-area button {
-  @apply bg-accent-500 text-white px-3 hover:bg-accent-600 transition-colors;
-}
-
-/* Additional Utilities */
-.prose a {
-  @apply text-accent-600 hover:text-accent-700 underline;
-}
-
-.btn-primary {
-  @apply bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors;
-}
-
-.btn-secondary {
-  @apply bg-accent-500 text-white px-6 py-2 rounded-lg hover:bg-accent-600 transition-colors;
-}
-
-/* Custom Animations - With will-change for performance */
+/* Custom Animations - Keep existing ones, ensure they are used appropriately */
 @keyframes border-rotate {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -80,66 +148,62 @@ body {
 
   @keyframes float {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-20px); }
+    50% { transform: translateY(-15px); } /* Reduced float intensity */
   }
 
   @keyframes float-delayed {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-15px); }
+    50% { transform: translateY(-10px); } /* Reduced float intensity */
   }
 
   .animate-float {
     will-change: transform;
-    animation: float 6s ease-in-out infinite;
+    animation: float 7s ease-in-out infinite; /* Slightly slower */
   }
 
   .animate-float-delayed {
     will-change: transform;
-    animation: float-delayed 7s ease-in-out infinite;
-    animation-delay: 1s;
+    animation: float-delayed 8s ease-in-out infinite; /* Slightly slower */
+    animation-delay: 1.5s;
   }
+
+   /* Example: Fade-in Up animation */
+   @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translate3d(0, 30px, 0);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+    }
+
+    .animate-fadeInUp {
+      will-change: opacity, transform;
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
 }
 
-/* Simpler hover effect for better mobile performance */
-.highlight-text {
-  @apply relative inline-block;
+/* Form Input Focus Styles (already good, ensure consistency) */
+input:focus, textarea:focus, select:focus {
+  @apply ring-2 ring-primary-300 border-primary-300;
 }
 
-.highlight-text::after {
-  content: '';
-  @apply absolute bottom-0 left-0 w-0 h-1 bg-accent-300/50;
-  transition: width 0.3s ease;
-}
-
-/* Only apply hover effects on devices that support hover */
-@media (hover: hover) {
-  .highlight-text:hover::after {
-    @apply w-full;
-  }
-}
-
-/* Custom Form Animations - Simplified for better hydration */
-input, textarea {
-  @apply transition-all duration-300;
-}
-
-input:focus, textarea:focus {
-  @apply ring-2 ring-primary-100;
-}
-
-/* Status Message Animation - Server/Client safe */
+/* Checkmark animation (keep if used) */
 .checkmark-animation path {
   stroke-dasharray: 20;
   stroke-dashoffset: 20;
 }
-
-/* Only apply animation client-side with JavaScript */
-/* In your JS: document.querySelectorAll('.checkmark-animation path').forEach(path => path.classList.add('animate-checkmark')); */
 .animate-checkmark {
   animation: checkmark 0.5s ease-out forwards;
 }
-
 @keyframes checkmark {
   0% { stroke-dashoffset: 20; }
   100% { stroke-dashoffset: 0; }
 }
+
+/* Ensure Chatbot styles don't conflict - they are mostly handled inline or in the component */
+/* Remove old chatbot widget styles if they exist here */
+/* .chatbot-toggle, .chatbot-window, etc. can be removed if styling is fully moved to the component */
+
