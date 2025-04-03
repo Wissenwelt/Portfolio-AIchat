@@ -12,7 +12,7 @@ import {
   Globe,
   Trash2,
   FileText,
-  File
+  File,
 } from "lucide-react";
 
 // Interface for chat messages
@@ -54,7 +54,7 @@ export default function ChatbotWidget() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isLoading, attachedFileData, scrollToBottom]); // Scroll when attachment changes too
+  }, [messages, isLoading, attachedFileData, scrollToBottom]);
 
   useEffect(() => {
     if (isOpen && !isLoading) {
@@ -67,8 +67,7 @@ export default function ChatbotWidget() {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
-        // result contains the Base64 string prefixed with data:..., remove the prefix
-        const base64String = (reader.result as string).split(',')[1];
+        const base64String = (reader.result as string).split(",")[1];
         if (base64String) {
           resolve(base64String);
         } else {
@@ -76,47 +75,40 @@ export default function ChatbotWidget() {
         }
       };
       reader.onerror = (error) => reject(error);
-      reader.readAsDataURL(file); // Reads as Data URL (contains Base64)
+      reader.readAsDataURL(file);
     });
   };
 
   const sendMessage = useCallback(async () => {
     const messageTextTrimmed = input.trim();
-    // Require either text or a file
     if (!messageTextTrimmed && !attachedFileData) return;
 
-    setError(null); // Clear previous errors
+    setError(null);
 
-    // Construct the user message text part
     const userMessageToSendText = messageTextTrimmed;
 
-    // Add visual message to chat immediately
-    // Include filename in the displayed message if a file is attached
     const displayMessageText = attachedFileData
-        ? `${messageTextTrimmed} ${messageTextTrimmed ? '• ' : ''}[File attached: ${attachedFileData.name}]`
-        : userMessageToSendText;
+      ? `${messageTextTrimmed} ${messageTextTrimmed ? "• " : ""}[File attached: ${attachedFileData.name}]`
+      : userMessageToSendText;
     const newUserMessage: ChatMessage = { from: "user", text: displayMessageText };
     setMessages((prev) => [...prev, newUserMessage]);
 
-    // Prepare history *before* adding current message
     const historyForAPI = messages.map((msg) => ({
       role: msg.from === "bot" ? "assistant" : "user",
       text: msg.text,
     }));
 
-    // Prepare data to send to backend API
     const requestBody = {
-        message: userMessageToSendText || `Please analyze the attached file: ${attachedFileData?.name}`,
-        history: historyForAPI,
-        searchMode: searchMode,
-        attachedFileData: attachedFileData // Send the file data object (can be null)
+      message: userMessageToSendText || `Please analyze the attached file: ${attachedFileData?.name}`,
+      history: historyForAPI,
+      searchMode: searchMode,
+      attachedFileData: attachedFileData,
     };
 
-    // Clear input and reset file state AFTER preparing data
     setInput("");
-    setAttachedFileData(null); // Clear the file data state
+    setAttachedFileData(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = ""; // Reset the file input element visually
+      fileInputRef.current.value = "";
     }
 
     setIsLoading(true);
@@ -125,7 +117,7 @@ export default function ChatbotWidget() {
       const res = await fetch("/api", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody), // Send the combined data
+        body: JSON.stringify(requestBody),
       });
 
       if (!res.ok) {
@@ -133,16 +125,15 @@ export default function ChatbotWidget() {
         try {
           const errorData = await res.json();
           errorMsg = errorData.error || errorData.reply || errorMsg;
-        } catch (e) { console.warn("Could not parse error response body."); }
+        } catch (e) {
+          console.warn("Could not parse error response body.");
+        }
         throw new Error(errorMsg);
       }
 
       const data = await res.json();
       if (typeof data.reply === "string") {
-        // Format the bot's response with proper spacing and paragraphs
-        const formattedReply = data.reply
-          .replace(/\n{3,}/g, '\n\n') // Replace excessive newlines
-          .trim();
+        const formattedReply = data.reply.replace(/\n{3,}/g, "\n\n").trim();
         setMessages((prev) => [...prev, { from: "bot", text: formattedReply }]);
       } else {
         throw new Error("Invalid response format from API (missing 'reply').");
@@ -154,7 +145,9 @@ export default function ChatbotWidget() {
       setError(errorText);
     } finally {
       setIsLoading(false);
-      if (isOpen) { inputRef.current?.focus(); }
+      if (isOpen) {
+        inputRef.current?.focus();
+      }
     }
   }, [input, messages, searchMode, attachedFileData, isOpen]);
 
@@ -171,30 +164,23 @@ export default function ChatbotWidget() {
     }
   };
 
-  // Updated file selection handler
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setError(null); // Clear previous errors
-      
-      // Basic size check (10MB)
+      setError(null);
       const maxSize = 10 * 1024 * 1024;
       if (file.size > maxSize) {
         setError(`File is too large (max ${maxSize / 1024 / 1024}MB).`);
-        if (fileInputRef.current) fileInputRef.current.value = ""; // Clear selection
+        if (fileInputRef.current) fileInputRef.current.value = "";
         return;
       }
-
-      // Check file type - Allow only PDF and TXT
-      if (file.type !== 'application/pdf' && file.type !== 'text/plain') {
+      if (file.type !== "application/pdf" && file.type !== "text/plain") {
         setError("Unsupported file type. Please attach a PDF or TXT file.");
-        if (fileInputRef.current) fileInputRef.current.value = ""; // Clear selection
+        if (fileInputRef.current) fileInputRef.current.value = "";
         return;
       }
-
-      setIsLoading(true); // Show loading indicator while reading file
-      setError("Reading file..."); // Indicate file reading
-
+      setIsLoading(true);
+      setError("Reading file...");
       try {
         const base64Content = await readFileAsBase64(file);
         setAttachedFileData({
@@ -203,43 +189,39 @@ export default function ChatbotWidget() {
           size: file.size,
           contentBase64: base64Content,
         });
-        setError(null); // Clear "Reading file..." message
-      } catch (readError: any) {
+        setError(null);
+      } catch (readError: unknown) {
         console.error("File reading error:", readError);
-        setError(`Failed to read file: ${readError.message || 'Unknown error'}`);
-        setAttachedFileData(null); // Clear any partial state
-        if (fileInputRef.current) fileInputRef.current.value = ""; // Clear selection
+        let errMsg = "Unknown error";
+        if (readError instanceof Error) errMsg = readError.message;
+        setError(`Failed to read file: ${errMsg}`);
+        setAttachedFileData(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
       } finally {
-        setIsLoading(false); // Hide loading indicator
+        setIsLoading(false);
       }
     }
   };
 
-  // Function to remove the attached file
   const removeAttachment = () => {
-    setAttachedFileData(null); // Clear the state
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""; // Reset the file input element
-    }
+    setAttachedFileData(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     inputRef.current?.focus();
   };
 
   const triggerSearch = () => {
     if (!isLoading) {
-      setSearchMode(prev => !prev);
-      // Notify user that search mode has been toggled
-      const searchStatusMessage = !searchMode 
+      setSearchMode((prev) => !prev);
+      const searchStatusMessage = !searchMode
         ? "Search mode activated. I'll look for relevant news when you send your next message."
         : "Search mode deactivated.";
-      
-      // Add the notice as a bot message
-      setMessages(prev => [...prev, { from: "bot", text: searchStatusMessage }]);
+      setMessages((prev) => [...prev, { from: "bot", text: searchStatusMessage }]);
     }
   };
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
-    if (!isOpen) { // Reset state when opening
+    if (!isOpen) {
       setError(null);
       setSearchMode(false);
       setAttachedFileData(null);
@@ -247,15 +229,13 @@ export default function ChatbotWidget() {
     }
   };
 
-  // Get file icon based on type
   const getFileIcon = (fileType: string) => {
-    if (fileType === 'application/pdf') {
+    if (fileType === "application/pdf") {
       return <FileText className="w-4 h-4 flex-shrink-0" />;
     }
     return <File className="w-4 h-4 flex-shrink-0" />;
   };
 
-  // Main component JSX
   return (
     <>
       <motion.button
@@ -271,37 +251,42 @@ export default function ChatbotWidget() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="fixed inset-0 z-[998] bg-white flex flex-col"
-            aria-modal="true" role="dialog"
+            aria-modal="true"
+            role="dialog"
           >
-            {/* Header */}
             <div className="flex justify-between items-center p-4 bg-gradient-to-r from-primary-600 to-accent-500 text-white">
               <div className="flex items-center gap-3">
-                <MessageSquare className="w-6 h-6" /> 
+                <MessageSquare className="w-6 h-6" />
                 <h2 className="text-xl font-semibold">Chat with Archie</h2>
                 {searchMode && (
                   <span className="px-2 py-0.5 bg-white/20 text-white text-xs rounded-full">Search Mode</span>
                 )}
               </div>
               <div>
-                <button onClick={toggleChat} className="p-2 rounded-full hover:bg-white/20 transition-colors" aria-label="Close Chat">
+                <button
+                  onClick={toggleChat}
+                  className="p-2 rounded-full hover:bg-white/20 transition-colors"
+                  aria-label="Close Chat"
+                >
                   <X className="w-6 h-6" />
                 </button>
               </div>
             </div>
 
-            {/* Messages Area */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
               {messages.map((msg, idx) => (
                 <motion.div
-                  key={idx} 
-                  initial={{ opacity: 0, y: 15 }} 
-                  animate={{ opacity: 1, y: 0 }} 
+                  key={idx}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.05 * Math.min(idx, 5) }}
                   className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  <div 
+                  <div
                     className={`max-w-[80%] px-4 py-2 rounded-2xl shadow-sm ${
                       msg.from === "user"
                         ? "bg-gradient-to-r from-primary-500 to-accent-500 text-white rounded-br-lg"
@@ -312,12 +297,11 @@ export default function ChatbotWidget() {
                   </div>
                 </motion.div>
               ))}
-              
-              {/* Loading Indicators */}
+
               {isLoading && searchMode && (
                 <motion.div className="flex items-center gap-2 p-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                   <Loader2 className="w-5 h-5 animate-spin text-gray-600" />
-                  <motion.span 
+                  <motion.span
                     className="text-gray-600 bg-white border border-gray-200 rounded-2xl px-4 py-2"
                     initial={{ scale: 1 }}
                     animate={{ scale: 1.05 }}
@@ -327,7 +311,7 @@ export default function ChatbotWidget() {
                   </motion.span>
                 </motion.div>
               )}
-              
+
               {isLoading && !searchMode && (
                 <motion.div className="flex items-center gap-2 p-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                   <Loader2 className="w-5 h-5 animate-spin text-gray-600" />
@@ -336,37 +320,34 @@ export default function ChatbotWidget() {
                   </span>
                 </motion.div>
               )}
-              
-              {/* Error Display */}
+
               {error && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-center p-2">
                   <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
                     <AlertCircle className="w-5 h-5" />
                     <span>{error}</span>
-                    <button 
-                      onClick={() => setError(null)} 
-                      className="ml-2 text-red-500 hover:text-red-700" 
+                    <button
+                      onClick={() => setError(null)}
+                      className="ml-2 text-red-500 hover:text-red-700"
                       aria-label="Dismiss error"
                     >
-                      <X size={16}/>
+                      <X size={16} />
                     </button>
                   </div>
                 </motion.div>
               )}
-              
+
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input Area */}
             <div className="p-4 border-t border-gray-200 bg-white">
-              {/* Attached File Display */}
               <AnimatePresence>
                 {attachedFileData && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
+                    animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
-                    transition={{duration: 0.2}}
+                    transition={{ duration: 0.2 }}
                     className="mb-2 text-sm text-gray-600 bg-gray-100 border border-gray-200 rounded-md px-3 py-1.5 flex items-center justify-between gap-2"
                   >
                     <div className="flex items-center gap-2 overflow-hidden">
@@ -390,12 +371,11 @@ export default function ChatbotWidget() {
                 )}
               </AnimatePresence>
 
-              {/* Input Row */}
               <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1 border border-gray-200">
                 <input
                   type="file"
                   ref={fileInputRef}
-                  style={{ display: 'none' }}
+                  style={{ display: "none" }}
                   onChange={handleFileSelect}
                   accept="application/pdf,text/plain"
                 />
@@ -403,22 +383,22 @@ export default function ChatbotWidget() {
                   onClick={handleAttachmentClick}
                   disabled={isLoading || !!attachedFileData}
                   className={`p-2 text-gray-500 hover:text-primary-600 hover:bg-gray-200 rounded-lg transition-colors ${
-                    isLoading || !!attachedFileData ? 'opacity-50 cursor-not-allowed' : ''
+                    isLoading || !!attachedFileData ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                   aria-label="Attach file (PDF or TXT)"
                 >
                   <Paperclip className="w-5 h-5" />
                 </button>
-                
+
                 <motion.button
                   onClick={triggerSearch}
                   disabled={isLoading}
                   className={`p-2 rounded-lg relative flex items-center justify-center transition-colors ${
                     searchMode ? "bg-primary-500 text-white" : "text-gray-500 hover:text-primary-600 hover:bg-gray-200"
-                  } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
                   aria-label="Toggle Search Mode"
-                  whileHover={{ scale: isLoading ? 1: 1.05 }}
-                  whileTap={{ scale: isLoading ? 1: 0.95 }}
+                  whileHover={{ scale: isLoading ? 1 : 1.05 }}
+                  whileTap={{ scale: isLoading ? 1 : 0.95 }}
                 >
                   <Globe className="w-5 h-5" />
                   <span className="hidden sm:inline ml-1">Search</span>
@@ -431,7 +411,7 @@ export default function ChatbotWidget() {
                     />
                   )}
                 </motion.button>
-                
+
                 <input
                   ref={inputRef}
                   type="text"
@@ -439,36 +419,36 @@ export default function ChatbotWidget() {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder={
-                    isLoading 
-                      ? "Processing..." 
+                    isLoading
+                      ? "Processing..."
                       : attachedFileData
-                        ? "Ask about the file or send without a message..."
-                        : searchMode
-                          ? "Ask anything (search mode active)..."
-                          : "Ask me anything, attach PDF/TXT..."
+                      ? "Ask about the file or send without a message..."
+                      : searchMode
+                      ? "Ask anything (search mode active)..."
+                      : "Ask me anything, attach PDF/TXT..."
                   }
                   className="flex-1 bg-transparent p-2 text-gray-700 placeholder-gray-400 focus:outline-none"
                   disabled={isLoading}
                   aria-label="Chat input"
                 />
-                
+
                 <motion.button
-                  whileHover={{ scale: (isLoading || (!input.trim() && !attachedFileData)) ? 1 : 1.05 }}
-                  whileTap={{ scale: (isLoading || (!input.trim() && !attachedFileData)) ? 1 : 0.95 }}
+                  whileHover={{
+                    scale: isLoading || (!input.trim() && !attachedFileData) ? 1 : 1.05,
+                  }}
+                  whileTap={{
+                    scale: isLoading || (!input.trim() && !attachedFileData) ? 1 : 0.95,
+                  }}
                   onClick={sendMessage}
                   disabled={isLoading || (!input.trim() && !attachedFileData)}
                   className={`p-2 rounded-lg bg-gradient-to-r from-primary-500 to-accent-500 text-white transition-all duration-200 ${
-                    (isLoading || (!input.trim() && !attachedFileData))
-                      ? 'opacity-50 cursor-not-allowed'
-                      : 'hover:from-primary-600 hover:to-accent-600'
+                    isLoading || (!input.trim() && !attachedFileData)
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:from-primary-600 hover:to-accent-600"
                   }`}
                   aria-label="Send message"
                 >
-                  {isLoading ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <Send className="w-5 h-5" />
-                  )}
+                  {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
                 </motion.button>
               </div>
             </div>
