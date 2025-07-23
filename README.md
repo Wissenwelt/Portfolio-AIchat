@@ -69,8 +69,7 @@ npm, yarn, or pnpm
 1. Clone the Repository
 First, clone the repository to your local machine:
 
-git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git
-cd YOUR_REPOSITORY_NAME
+git clone https://github.com/Wissenwelt/Portfolio-AIchat.git
 
 2. Install Dependencies
 Install all the necessary packages using your preferred package manager:
