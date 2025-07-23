@@ -11,7 +11,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![AI Powered](https://img.shields.io/badge/AI_Powered-Llama_3.1_8B-FF6B6B?style=for-the-badge&logo=openai&logoColor=white)](https://llama.meta.com/)
 
-[🌐 **Live Demo (Coming Soon)**](https://vijendramalik.com) • [👤 **LinkedIn**](https://www.linkedin.com/in/vijendramalik/) • [💻 **GitHub**](https://github.com/Wissenwelt)
+[🌐 **Live Demo (Coming Soon)**](https://portfolio-a-ichat-ggkv.vercel.app/) • [👤 **LinkedIn**](https://www.linkedin.com/in/vijendramalik/) • [💻 **GitHub**](https://github.com/Wissenwelt)
 
 </div>
 
